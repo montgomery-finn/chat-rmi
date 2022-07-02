@@ -4,10 +4,14 @@
  */
 package servidor.controllers;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.util.List;
+
 /**
  *
  * @author sandr
  */
-public class IConversasController {
-    
+public interface IConversasController extends Remote{
+    public void Create(String nome, List<String> nomesUsuarios) throws RemoteException, Exception, Exception;
 }

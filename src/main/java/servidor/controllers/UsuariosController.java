@@ -7,10 +7,10 @@ package servidor.controllers;
 import cliente.IClienteCallback;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import servidor.repositories.ICallbackRepository;
 import shared.models.Usuario;
 import servidor.views.ServidorView;
 import servidor.repositories.IUsuariosRepository;
@@ -25,17 +25,18 @@ public class UsuariosController extends UnicastRemoteObject implements IUsuarios
     private final IUsuariosRepository _usuarioRepository;
     private final IEncryptService _encryptService;
     private final ServidorView _servidorView;
-    private final List<IClienteCallback> _clienteCallbacks;
+    private final ICallbackRepository _callbackRepository;
     
     public UsuariosController(
             IUsuariosRepository usuarioRepository, 
             IEncryptService encryptService,
+            ICallbackRepository callbackRepository,
             ServidorView servidorView) throws RemoteException {
         super();
         _usuarioRepository = usuarioRepository;
         _encryptService = encryptService;
         _servidorView = servidorView;
-        _clienteCallbacks = new ArrayList<IClienteCallback>();
+        _callbackRepository = callbackRepository;
     }
 
     @Override
@@ -73,7 +74,7 @@ public class UsuariosController extends UnicastRemoteObject implements IUsuarios
         
         var usuariosOnline = _usuarioRepository.GetOnlines();
         _servidorView.UpdateUsuariosOnline(usuariosOnline);
-        _clienteCallbacks.add(clienteCallback);
+        _callbackRepository.Add(clienteCallback);
         
         UpdateUsuariosOnCallbacks();
         
@@ -82,7 +83,7 @@ public class UsuariosController extends UnicastRemoteObject implements IUsuarios
     private void UpdateUsuariosOnCallbacks(){
         var usuarios = _usuarioRepository.GetAll();
 
-        for(IClienteCallback clienteCallback: _clienteCallbacks){
+        for(IClienteCallback clienteCallback: _callbackRepository.GetAll()){
             try {
                 clienteCallback.SetUsuarios(usuarios);
             } catch (RemoteException ex) {
@@ -100,9 +101,7 @@ public class UsuariosController extends UnicastRemoteObject implements IUsuarios
         var usuariosOnline = _usuarioRepository.GetOnlines();
         _servidorView.UpdateUsuariosOnline(usuariosOnline);
         
-        _clienteCallbacks.remove(clienteCallback);
+        _callbackRepository.Remove(clienteCallback);
         UpdateUsuariosOnCallbacks();
     }
-    
-    
 }

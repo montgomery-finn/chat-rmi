@@ -11,6 +11,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import servidor.controllers.IConversasController;
 import servidor.controllers.IUsuariosController;
 
 /**
@@ -22,9 +23,13 @@ public class Main {
     public static void main(String[] args) {
         
         try {
-            IUsuariosController usuariosController = (IUsuariosController) Naming.lookup("rmi://localhost:1234/Usuarios");
+            IUsuariosController usuariosController = 
+                    (IUsuariosController) Naming.lookup("rmi://localhost:1234/Usuarios");
             
-            ClienteView cadastroView = new ClienteView(usuariosController);
+            IConversasController conversasController = 
+                    (IConversasController) Naming.lookup("rmi://localhost:1234/Conversas");
+            
+            ClienteView cadastroView = new ClienteView(usuariosController, conversasController);
             cadastroView.setVisible(true);
             
         } catch (NotBoundException | MalformedURLException | RemoteException ex) {

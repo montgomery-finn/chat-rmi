@@ -4,10 +4,37 @@
  */
 package servidor.repositories;
 
+import java.util.ArrayList;
+import java.util.List;
+import shared.models.Conversa;
+import shared.models.Usuario;
+
 /**
  *
  * @author sandr
  */
 public class ConversasRepository implements IConversasRepository {
+    private List<Conversa> _conversas;
     
+    public ConversasRepository(){
+        _conversas = new ArrayList<>();
+    }
+
+    @Override
+    public void Add(Conversa conversa) {
+        _conversas.add(conversa);
+    }
+
+    @Override
+    public List<Conversa> ObterTodasUsuario(Usuario usuario) {
+        var conversas = new ArrayList<Conversa>();
+        
+        for(var conversa : _conversas){
+            if(conversa.ContemUsuario(usuario)){
+                conversas.add(conversa);
+            }
+        }
+        
+        return conversas;
+    }
 }

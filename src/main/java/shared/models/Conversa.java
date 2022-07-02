@@ -14,8 +14,10 @@ import java.util.List;
 public class Conversa {
     private List<Usuario> _usuarios;
     private List<Mensagem> _mensagens;
+    private String _nome;
     
-    public Conversa(List<Usuario> usuarios){
+    public Conversa(String nome, List<Usuario> usuarios){
+        _nome = nome;
         _usuarios = usuarios;
         _mensagens = new ArrayList();
     }
@@ -30,5 +32,13 @@ public class Conversa {
     
     public List<Mensagem> GetMensagens(){
         return _mensagens;
+    }
+    
+    public boolean ContemUsuario(Usuario usuario){
+        return _usuarios.stream().anyMatch(u -> u.GetName().equals(usuario.GetName()));
+    }
+    
+    public String GetNome(){
+        return _nome;
     }
 }

@@ -36,8 +36,8 @@ public class ClienteCallback extends UnicastRemoteObject implements IClienteCall
     }
 
     @Override
-    public void SetConversas(List<Conversa> conversas) throws RemoteException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public void SetConversas(List<String> nomesConversas) throws RemoteException {
+        _clienteView.UpdateConversas(nomesConversas);
     }
 
     @Override
