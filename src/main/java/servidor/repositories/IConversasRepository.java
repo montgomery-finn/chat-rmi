@@ -14,6 +14,6 @@ import shared.models.Usuario;
  */
 public interface IConversasRepository {
     public void Add(Conversa conversa);
-    
+    public Conversa GetById(String id);
     public List<Conversa> ObterTodasUsuario(Usuario usuario);
 }

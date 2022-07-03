@@ -16,6 +16,7 @@ import servidor.repositories.ICallbackRepository;
 import servidor.repositories.IConversasRepository;
 import servidor.repositories.IUsuariosRepository;
 import shared.models.Conversa;
+import shared.models.Mensagem;
 import shared.models.Usuario;
 
 /**
@@ -66,14 +67,35 @@ public class ConversasController extends UnicastRemoteObject implements IConvers
             
             if(callback != null){
                 conversas = _conversasRepository.ObterTodasUsuario(usuario);
-                nomesConversas = conversas.stream().map(c -> c.GetNome()).collect(Collectors.toList());
                 
                 try {
-                    callback.SetConversas(nomesConversas);
+                    callback.SetConversas(conversas);
                 } catch (RemoteException ex) {
                     Logger.getLogger(ConversasController.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+        }
+    }
+
+    @Override
+    public void AddMensagem(String conversaId, String mensagem, String nomeUsuario) throws RemoteException, Exception, Exception {
+        var conversa = _conversasRepository.GetById(conversaId);
+        
+        if(conversa == null){
+            throw new Exception("conversa não encontrada");
+        }
+        
+        Usuario usuario = _usuariosRepository.GetByName(nomeUsuario);
+        
+        conversa.AddMensagem(new Mensagem(mensagem, usuario));
+        
+        var callbacks = _callbackRepository.GetByConversa(conversa);
+        
+        List<Conversa> conversas;
+        for(var callback : callbacks){
+            usuario = _usuariosRepository.GetByName(callback.GetUsuarioName());
+            conversas = _conversasRepository.ObterTodasUsuario(usuario);
+            callback.SetConversas(conversas);
         }
     }
     

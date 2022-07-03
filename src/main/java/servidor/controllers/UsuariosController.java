@@ -7,10 +7,10 @@ package servidor.controllers;
 import cliente.IClienteCallback;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import servidor.repositories.ICallbackRepository;
+import servidor.repositories.IConversasRepository;
 import shared.models.Usuario;
 import servidor.views.ServidorView;
 import servidor.repositories.IUsuariosRepository;
@@ -26,17 +26,20 @@ public class UsuariosController extends UnicastRemoteObject implements IUsuarios
     private final IEncryptService _encryptService;
     private final ServidorView _servidorView;
     private final ICallbackRepository _callbackRepository;
+    private final IConversasRepository _conversasRepository;
     
     public UsuariosController(
             IUsuariosRepository usuarioRepository, 
             IEncryptService encryptService,
             ICallbackRepository callbackRepository,
-            ServidorView servidorView) throws RemoteException {
+            ServidorView servidorView,
+            IConversasRepository conversasRepository) throws RemoteException {
         super();
         _usuarioRepository = usuarioRepository;
         _encryptService = encryptService;
         _servidorView = servidorView;
         _callbackRepository = callbackRepository;
+        _conversasRepository = conversasRepository;
     }
 
     @Override
@@ -77,18 +80,28 @@ public class UsuariosController extends UnicastRemoteObject implements IUsuarios
         _callbackRepository.Add(clienteCallback);
         
         UpdateUsuariosOnCallbacks();
+        UpdateConversasOnCliente(usuario, clienteCallback);
         
     }
 
     private void UpdateUsuariosOnCallbacks(){
         var usuarios = _usuarioRepository.GetAll();
-
+        
         for(IClienteCallback clienteCallback: _callbackRepository.GetAll()){
             try {
                 clienteCallback.SetUsuarios(usuarios);
             } catch (RemoteException ex) {
                 Logger.getLogger(UsuariosController.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+    }
+    
+    private void UpdateConversasOnCliente(Usuario usuario, IClienteCallback clienteCallback){
+        var conversas = _conversasRepository.ObterTodasUsuario(usuario);
+        try {
+            clienteCallback.SetConversas(conversas);
+        } catch (RemoteException ex) {
+            Logger.getLogger(UsuariosController.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

@@ -36,8 +36,8 @@ public class ClienteCallback extends UnicastRemoteObject implements IClienteCall
     }
 
     @Override
-    public void SetConversas(List<String> nomesConversas) throws RemoteException {
-        _clienteView.UpdateConversas(nomesConversas);
+    public void SetConversas(List<Conversa> conversas) throws RemoteException {
+        _clienteView.UpdateConversas(conversas);
     }
 
     @Override

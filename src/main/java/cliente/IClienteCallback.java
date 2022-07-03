@@ -17,6 +17,6 @@ import shared.models.Usuario;
 public interface IClienteCallback extends Remote {
     public String GetUsuarioName() throws RemoteException;
     public void UpdateConversa(Conversa conversa) throws RemoteException;
-    public void SetConversas(List<String> nomesConversas) throws RemoteException;
+    public void SetConversas(List<Conversa> nomesConversas) throws RemoteException;
     public void SetUsuarios(List<Usuario> usuarios) throws RemoteException;
 }

@@ -14,6 +14,7 @@ import javax.swing.ListSelectionModel;
 import servidor.controllers.IConversasController;
 import shared.models.Usuario;
 import servidor.controllers.IUsuariosController;
+import shared.models.Conversa;
 
 /**
  *
@@ -27,11 +28,16 @@ public class ClienteView extends javax.swing.JFrame {
     
     private IUsuariosController _usuariosController;
     private IConversasController _conversasController;
+    
     private ErroView _erroView;
+    
     DefaultListModel _usuariosListModel;
     DefaultListModel _conversasListModel;
+    DefaultListModel _mensagensListModel;
+    
     private IClienteCallback _clienteCallback;
-
+    
+    private List<Conversa> _conversas;
     
     public ClienteView(IUsuariosController usuariosController, IConversasController conversasController) {
         _usuariosController = usuariosController;
@@ -48,6 +54,9 @@ public class ClienteView extends javax.swing.JFrame {
         
         _conversasListModel = new DefaultListModel();
         conversasList.setModel(_conversasListModel);
+        
+        _mensagensListModel = new DefaultListModel();
+        mensagensList.setModel(_mensagensListModel);
     }
 
     /**
@@ -73,7 +82,7 @@ public class ClienteView extends javax.swing.JFrame {
         conversasList = new javax.swing.JList<>();
         jLabel5 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jList3 = new javax.swing.JList<>();
+        mensagensList = new javax.swing.JList<>();
         jScrollPane1 = new javax.swing.JScrollPane();
         usuariosList = new javax.swing.JList<>();
         jLabel6 = new javax.swing.JLabel();
@@ -83,7 +92,7 @@ public class ClienteView extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         nomeConversa = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
-        jTextField2 = new javax.swing.JTextField();
+        textMensagem = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -123,11 +132,16 @@ public class ClienteView extends javax.swing.JFrame {
 
         jLabel4.setText("Conversas");
 
+        conversasList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                conversasListValueChanged(evt);
+            }
+        });
         jScrollPane2.setViewportView(conversasList);
 
         jLabel5.setText("Mensagens");
 
-        jScrollPane3.setViewportView(jList3);
+        jScrollPane3.setViewportView(mensagensList);
 
         jScrollPane1.setViewportView(usuariosList);
 
@@ -154,13 +168,18 @@ public class ClienteView extends javax.swing.JFrame {
 
         jLabel10.setText("Nome da conversa:");
 
-        jTextField2.addActionListener(new java.awt.event.ActionListener() {
+        textMensagem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField2ActionPerformed(evt);
+                textMensagemActionPerformed(evt);
             }
         });
 
         jButton2.setText("Enviar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout painelLogadoLayout = new javax.swing.GroupLayout(painelLogado);
         painelLogado.setLayout(painelLogadoLayout);
@@ -192,11 +211,11 @@ public class ClienteView extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(painelLogadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jLabel5)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 432, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelLogadoLayout.createSequentialGroup()
-                        .addComponent(jTextField2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2)))
+                    .addGroup(painelLogadoLayout.createSequentialGroup()
+                        .addComponent(textMensagem, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jButton2))
+                    .addComponent(jScrollPane3))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         painelLogadoLayout.setVerticalGroup(
@@ -229,7 +248,7 @@ public class ClienteView extends javax.swing.JFrame {
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 382, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(painelLogadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(textMensagem, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton2))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -342,9 +361,37 @@ public class ClienteView extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_nomeConversaActionPerformed
 
-    private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
+    private void textMensagemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textMensagemActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField2ActionPerformed
+    }//GEN-LAST:event_textMensagemActionPerformed
+
+    private void conversasListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_conversasListValueChanged
+        var selectedConversaIndex = conversasList.getSelectedIndex();
+        
+        if(selectedConversaIndex != -1){
+           UpdateMensagens();
+        }
+    }//GEN-LAST:event_conversasListValueChanged
+    
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        var selectedConversaIndex = conversasList.getSelectedIndex();
+        
+        if(selectedConversaIndex == -1){
+            _erroView.SetMessage("Selecione uma conversa");
+            _erroView.setVisible(true);
+        }
+        else{
+            var conversa = _conversas.get(selectedConversaIndex);
+            var mensagem = textMensagem.getText();
+            try {
+                _conversasController.AddMensagem(conversa.GetId(), mensagem, textUsuario.getText());
+                textMensagem.setText("");
+            } catch (Exception ex) {
+                _erroView.SetMessage(ex.getMessage());
+                _erroView.setVisible(true);
+            }
+        }
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     public void UpdateUsuarios(List<Usuario> usuarios){
         _usuariosListModel.clear();
@@ -359,16 +406,40 @@ public class ClienteView extends javax.swing.JFrame {
             }
         }
     }
-
-    public void UpdateConversas(List<String> conversas){
+    
+    public void UpdateConversas(List<Conversa> conversas){
+        _conversas = conversas;
+        var selectedConversaIndex = conversasList.getSelectedIndex();
+        
         _conversasListModel.clear();
         if(conversas != null){
             for(var conversa : conversas){
-                _conversasListModel.addElement(conversa);
+                _conversasListModel.addElement(conversa.GetNome());
+            }
+        }
+        
+        if(selectedConversaIndex != -1){
+            conversasList.setSelectedIndex(selectedConversaIndex);
+            UpdateMensagens();
+        }
+        
+    }
+
+    private void UpdateMensagens(){
+         var conversa = _conversas.get(conversasList.getSelectedIndex());
+            
+        if(conversa != null){
+            _mensagensListModel.clear();
+            for(var mensagem : conversa.GetMensagens()){
+                _mensagensListModel.addElement(mensagem.GetTime() 
+                        + " - " 
+                        + mensagem.GetUsuarioName()
+                        + " - " 
+                        + mensagem.GetText());
             }
         }
     }
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cadastrarButton;
     private javax.swing.JList<String> conversasList;
@@ -385,14 +456,14 @@ public class ClienteView extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JList<String> jList3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTextField jTextField2;
+    private javax.swing.JList<String> mensagensList;
     private javax.swing.JTextField nomeConversa;
     private javax.swing.JPanel painelLogado;
     private javax.swing.JButton sairButton;
+    private javax.swing.JTextField textMensagem;
     private javax.swing.JPasswordField textSenha;
     private javax.swing.JTextField textUsuario;
     private javax.swing.JList<String> usuariosList;

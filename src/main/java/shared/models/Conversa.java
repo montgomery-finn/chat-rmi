@@ -4,19 +4,23 @@
  */
 package shared.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  *
  * @author sandr
  */
-public class Conversa {
+public class Conversa implements Serializable {
     private List<Usuario> _usuarios;
     private List<Mensagem> _mensagens;
     private String _nome;
+    private String _id;
     
     public Conversa(String nome, List<Usuario> usuarios){
+        _id = UUID.randomUUID().toString();
         _nome = nome;
         _usuarios = usuarios;
         _mensagens = new ArrayList();
@@ -40,5 +44,9 @@ public class Conversa {
     
     public String GetNome(){
         return _nome;
+    }
+
+    public String GetId(){
+        return _id;
     }
 }

@@ -37,4 +37,10 @@ public class ConversasRepository implements IConversasRepository {
         
         return conversas;
     }
+
+    @Override
+    public Conversa GetById(String id) {
+        var conversa = _conversas.stream().filter(c -> c.GetId().equals(id)).findFirst().orElse(null);
+        return conversa;
+    }
 }

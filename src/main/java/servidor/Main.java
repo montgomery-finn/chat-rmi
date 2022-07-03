@@ -37,7 +37,7 @@ public class Main {
         IEncryptService encryptService = new EncryptService();
         
         IUsuariosController usuariosController = 
-                new UsuariosController(usuarioRepository, encryptService, callbackRepository, servidorView);
+                new UsuariosController(usuarioRepository, encryptService, callbackRepository, servidorView, conversasRepository);
         
         IConversasController conversasController = 
                 new ConversasController(conversasRepository, usuarioRepository, callbackRepository);

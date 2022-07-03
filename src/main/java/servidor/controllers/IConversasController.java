@@ -14,4 +14,5 @@ import java.util.List;
  */
 public interface IConversasController extends Remote{
     public void Create(String nome, List<String> nomesUsuarios) throws RemoteException, Exception, Exception;
+    public void AddMensagem(String conversaId, String mensagem, String nomeUsuario) throws RemoteException, Exception, Exception;
 }
