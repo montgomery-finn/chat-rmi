@@ -4,6 +4,10 @@
  */
 package servidor.services;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 /**
  *
  * @author sandr
@@ -12,12 +16,22 @@ public class EncryptService implements IEncryptService {
 
     @Override
     public String Criptografar(String senha) {
-        return senha;
+        return getHashMd5(senha);
     }
 
     @Override
     public boolean Verificar(String senha, String criptografada) {
-        return senha.equals(criptografada);
+        return getHashMd5(senha).equals(criptografada);
     }
     
+    private String getHashMd5(String value) {
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("MD5");
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+        BigInteger hash = new BigInteger(1, md.digest(value.getBytes()));
+        return hash.toString(16);
+    }
 }
